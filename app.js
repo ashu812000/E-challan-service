@@ -7,6 +7,7 @@ let eChalan = require('./routes/e-chalan');
 let shops = require('./routes/shops');
 let products = require('./routes/products');
 let auth = require('./routes/auth');
+const otpRoutes = require('./routes/otp');
 require('dotenv').config();
 
 
@@ -24,5 +25,6 @@ app.use('/', eChalan);
 app.use('/auth', auth);
 app.use('/shops', shops);
 app.use('/products', products);
+app.use('/otp', otpRoutes);
 
 module.exports = app;
