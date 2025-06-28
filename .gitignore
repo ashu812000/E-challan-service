@@ -44,3 +44,4 @@ temp/
 *.tgz
 package-lock.json
 yarn.lock
+/generated/prisma

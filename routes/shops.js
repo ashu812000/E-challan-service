@@ -4,6 +4,6 @@ const {createShopRecord, getShopRecords} = require('../controller/shops');
 const verifyAdminAuth = require('../middleware/authmiddleware');
 
 router.post('/registerShop', verifyAdminAuth, createShopRecord);
-router.get('/shopDetail/:id', getShopRecords);
+router.get('/shopDetail/:shopNumber', getShopRecords);
 
 module.exports = router;

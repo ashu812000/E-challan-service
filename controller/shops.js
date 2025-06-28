@@ -1,4 +1,6 @@
-const {createShop, getAllShops} = require('../helper/shops');
+const {createShop, getShops} = require('../helper/shops');
+const {respond} = require("../middleware/respond");
+const {errorHandler} = require("../utils/errorCodes");
 
 exports.createShopRecord = async (req, res) => {
     try {
@@ -11,12 +13,10 @@ exports.createShopRecord = async (req, res) => {
 
 exports.getShopRecords = async (req, res) => {
     try {
-        const shops = await getAllShops(req);
-        if (!shops) {
-            return res.status(404).json({ message: 'Shop not found' });
-        }
-        res.status(200).json(shops);
+        const shops = await getShops(req);
+        respond(res, shops);
     } catch (error) {
-        res.status(500).json({error: 'Failed to fetch shop records', details: error.message});
+        console.log(error);
+        respond(res, errorHandler('500',req));
     }
 };

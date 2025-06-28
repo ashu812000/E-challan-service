@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+/**
+ * ─────────────────────────  OTP  ─────────────────────────
+ */
+model Otp {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String   @unique
+  otpHash    String
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+
+  @@index([expiresAt], map: "expire_index")
+}
+
+/**
+ * ────────────────────────  SHOPS  ────────────────────────
+ */
+model Shop {
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  district        String
+  block           String?
+  gramPanchayat   String
+  shopOwnerName   String
+  shopNumber      String  @unique
+  cardType        String
+  defaultQuantity Int
+  orders          Order[]
+}
+
+/**
+ * ───────────────────────  PRODUCTS  ──────────────────────
+ */
+model Product {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  rate          Float
+  orderProducts OrderProduct[] // many‑to‑many link
+
+  @@index([name])
+}
+
+/**
+ * ────────────────────────  ORDERS  ───────────────────────
+ */
+model Order {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  shop          Shop?          @relation(fields: [shopId], references: [id])
+  shopId        String?        @db.ObjectId
+  orderProducts OrderProduct[] // many‑to‑many link
+  createdAt     DateTime       @default(now())
+  totalPrice    Float
+  month         String
+  year          String
+  yojna         String
+  phoneNumber   String
+  payment       PaymentSlip?   @relation("OrderToPayment") // 1‑to‑1 optional
+}
+
+/**
+ * ────────────  ORDER ↔ PRODUCT JOIN COLLECTION  ───────────
+ */
+model OrderProduct {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @db.ObjectId
+  quantity  Int     @default(1)
+
+  @@unique([orderId, productId]) // prevent duplicates
+}
+
+/**
+ * ────────────────────  PAYMENT SLIP (1‑to‑1)  ───────────────────
+ */
+model PaymentSlip {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  paymentImage Bytes? // store binary screenshot
+  order        Order  @relation("OrderToPayment", fields: [orderId], references: [id])
+  orderId      String @unique @db.ObjectId // guarantees exactly one slip per order
+}
