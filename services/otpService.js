@@ -9,11 +9,6 @@ const otpDb = require('../database/otp')
 exports.sendOTP = async (req) => {
   const { phoneNumber } = req.body;
   const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-  console.log("onfig.accountSid ::::",config.accountSid)
-  console.log("onfig.authToken :::",config.authToken)
-  console.log("process.env :::::",process.env.TWILIO_SID);
-  console.log("env :::",process.env.TWILIO_AUTH_TOKEN);
-  console.log("config :::",config);
 
   // Validate input
   if (!phoneNumber) return errorHandler('02', req);

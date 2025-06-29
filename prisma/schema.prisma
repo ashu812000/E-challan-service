@@ -42,9 +42,18 @@ model Product {
   id            String         @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   rate          Float
+  productId     String
+  unit          Unit
+  description   String?
   orderProducts OrderProduct[] // many‑to‑many link
 
   @@index([name])
+}
+
+enum Unit {
+  KG
+  Litter
+  Gram
 }
 
 /**
@@ -58,10 +67,17 @@ model Order {
   createdAt     DateTime       @default(now())
   totalPrice    Float
   month         String
+  status        Status         @default(pending)
   year          String
   yojna         String
   phoneNumber   String
   payment       PaymentSlip?   @relation("OrderToPayment") // 1‑to‑1 optional
+}
+
+enum Status {
+  pending
+  accept
+  reject
 }
 
 /**

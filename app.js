@@ -8,6 +8,7 @@ let shops = require('./routes/shops');
 let products = require('./routes/products');
 let auth = require('./routes/auth');
 const otpRoutes = require('./routes/otp');
+const orderRoutes = require('./routes/order');
 require('dotenv').config();
 
 
@@ -26,5 +27,6 @@ app.use('/auth', auth);
 app.use('/shops', shops);
 app.use('/products', products);
 app.use('/otp', otpRoutes);
+app.use('/order',orderRoutes);
 
 module.exports = app;

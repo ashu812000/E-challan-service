@@ -1,19 +1,23 @@
 const {createProduct, getAllProductsWithoutRate} = require('../helper/products');
+const {respond} = require("../middleware/respond");
+const {errorHandler} = require("../utils/errorCodes");
 
 exports.addProduct = async (req, res) => {
     try {
         const savedProduct = await createProduct(req, res);
-        res.status(201).json(savedProduct);
+        respond(res, savedProduct);
     } catch (error) {
-        res.status(500).json({error: 'Failed to create product', details: error.message});
+        console.log(error);
+        respond(res,errorHandler("500",req))
     }
 };
 
 exports.getProducts = async (req, res) => {
     try {
-        const products = await getAllProductsWithoutRate();
-        res.status(200).json(products);
+        const products = await getAllProductsWithoutRate(req);
+        respond(res, products);
     } catch (error) {
-        res.status(500).json({error: 'Failed to fetch products', details: error.message});
+        console.log(error);
+        respond(res,errorHandler('500',req))
     }
 };

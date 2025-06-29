@@ -110,11 +110,10 @@ const db = {
      * @param where
      * @returns {Promise<*>}
      */
-    async findUnique(ctx, table, where) {
-        console.log("where :",where);
-        console.log(ctx)
+    async findUnique(ctx, table, where,include) {
         return ctx.prisma[table].findUnique({
-            where: where
+            where: where,
+            include: include,
         });
     }, /**
      * function to get the first row of the given condition from a table.

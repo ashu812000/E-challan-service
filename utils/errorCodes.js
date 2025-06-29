@@ -41,6 +41,9 @@ const handleErrorByApi = (errCode, path) => {
         case 'otp' :
             handleOtp(errCode, response);
             break;
+        case 'order':
+            handleOrder(errCode, response);
+            break;
         default:
             response.reason = "Internal error";
     }
@@ -72,6 +75,9 @@ const handleProducts = (errCode, response) => {
         case '01':
             response.reason = "Internal server error";
             break;
+        case '02':
+            response.reason = "Name and rate are required";
+            break;
     }
 }
 const handleOtp = (errCode, response) => {
@@ -94,6 +100,35 @@ const handleOtp = (errCode, response) => {
         case '06':
             response.reason = "Invalid OTP";
             break;
+    }
+}
+const handleOrder = (errCode, response) => {
+    switch (errCode) {
+        case '01':
+            response.reason = "Missing required fields.";
+            break;
+        case '02':
+            response.reason = "Some products not found.";
+            break;
+        case '03':
+            response.reason = "Order ID is required";
+            break;
+        case '04':
+            response.reason = "Order not found";
+            break;
+        case '05':
+            response.reason = "Product list is empty";
+            break;
+        case '06':
+            response.reason = "Order ID and image are required.";
+            break;
+        case '07':
+            response.reason = "Payment proof already exists for this order.";
+            break;
+            case '08':
+                response.reason = "Payment proof does not exist for this order.";
+                break;
+
 
     }
 }
