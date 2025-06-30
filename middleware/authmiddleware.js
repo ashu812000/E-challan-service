@@ -1,19 +1,18 @@
 const { verifyToken } = require('../helper/auth');
 
 function verifyAuth(req, res, next) {
-    next();
-    return;
     const token = req.cookies.token;
-
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized. Login required.' });
+        return res.status(401).send({
+            status: 401,
+            message: 'No token provided',
+        })
     }
-
     try {
-        const decoded = verifyToken(token);
-        req.admin = decoded; // optional usage
+        verifyToken(token);
         next();
     } catch (err) {
+        console.log("err::::", err);
         return res.status(403).json({ message: 'Invalid or expired token' });
     }
 }

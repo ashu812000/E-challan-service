@@ -1,6 +1,7 @@
 const helper= require('../helper/orders')
 const {respond} = require("../middleware/respond");
 const {errorHandler} = require("../utils/errorCodes");
+const {hashOtp} = require("../utils/functions");
 const orders = {
     doOrder: async (req, res) => {
         try {
@@ -54,6 +55,26 @@ const orders = {
             const proof = await helper.getPaymentProof(req);
             console.log("got payment proof", proof);
             respond(res, proof);
+        }catch (err) {
+            console.log(err)
+            respond(res,errorHandler('500',req))
+        }
+    },
+    updateOrder:async (req, res) => {
+        try {
+            const update = await helper.updateOrder(req);
+            console.log("updateOrder :::", update);
+            respond(res, update);
+        }catch (err) {
+            console.log(err)
+            respond(res,errorHandler('500',req))
+        }
+    },
+    fetchOrderCounts : async (req, res) => {
+        try {
+            const counts = await helper.fetchOrderCounts(req);
+            console.log("Orders Counts :::", counts);
+            respond(res, counts);
         }catch (err) {
             console.log(err)
             respond(res,errorHandler('500',req))

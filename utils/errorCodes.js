@@ -54,8 +54,23 @@ const handleErrorByApi = (errCode, path) => {
 const handleAuth = (errCode, response) => {
     switch (errCode) {
         case '01':
-            response.reason = "Error Occurred";
+            response.reason = "email and password are required.";
             break;
+        case '02':
+            response.reason = "Admin does not exist";
+            break;
+        case '03':
+            response.reason = "Passwords do not match";
+            break;
+        case '04':
+            response.reason = "JWT token Not Found";
+            break;
+        case '05':
+            response.reason = "Error Occurred in Token";
+            break;
+            case '06':
+                response.reason = "Admin already exist";
+                break;
     }
 }
 
@@ -125,8 +140,14 @@ const handleOrder = (errCode, response) => {
         case '07':
             response.reason = "Payment proof already exists for this order.";
             break;
-            case '08':
-                response.reason = "Payment proof does not exist for this order.";
+        case '08':
+            response.reason = "Payment proof does not exist for this order.";
+            break;
+        case '09':
+            response.reason = "Failed to update this order.";
+            break;
+            case '10':
+                response.reason = "Wrong status value provided.";
                 break;
 
 

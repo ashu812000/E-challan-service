@@ -91,10 +91,8 @@ async function getAllOrders(req) {
                 product: true
             }
         },
-        payment: true
     }
     const orders = await db.getAllOrders(req, {}, include)
-
     return {
         success: true,
         count: orders.length,
@@ -179,10 +177,53 @@ async function paymentProof(req) {
 }
 async function getPaymentProof(req) {
     const {orderId} = req.params;
+    if(!orderId) return errorHandler("03", req);
     const existing = await paymentDB.getPayment(req,{orderId:orderId});
     if (!existing) {return errorHandler('08',req)}
     return existing;
 }
+async function updateOrder(req) {
+    const {orderId,status} = req.body;
+    if(!orderId || !status) return errorHandler("03", req);
+    const dbStatus = ['pending','accept','reject'];
+    if(!dbStatus.includes(status)){
+        return errorHandler("10", req);
+    }
+
+
+    const whereCondition = {
+        id:orderId
+    }
+    const data = {
+        status: status,
+    }
+    const updates = await db.updateOrder(req,data,whereCondition);
+    if(!updates) {
+        return errorHandler("04", req);
+    }
+    if(updates.code) return updates;
+    return {
+        success: true,
+        message: 'Order updated successfully.',
+    }
+}
+async function fetchOrderCounts(req) {
+    const statuses = ['pending','accept','reject'];
+    const statues = await Promise.all(statuses.map( stat => {
+        return  db.fetchOrderCounts(req,{
+            status:stat
+        })
+    }))
+    return {
+        success: true,
+        data: {
+            pending: statues[0],
+            accepted: statues[1],
+            reject: statues[2],
+        }
+    }
+}
+
 
 module.exports = {
     fetchOrder,
@@ -190,5 +231,7 @@ module.exports = {
     getAllOrders,
     calculatePrice,
     paymentProof,
-    getPaymentProof
+    getPaymentProof,
+    updateOrder,
+    fetchOrderCounts
 }

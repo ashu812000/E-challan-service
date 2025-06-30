@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
-const Admin = require("../models/adminAuth");
+const {errorHandler} = require("../utils/errorCodes");
 const SECRET_KEY = process.env.SECRET_KEY;
-
+const db = require('../database/auth')
+const {hashPassword} = require("../utils/functions");
 function generateToken(payload) {
-    return jwt.sign(payload, SECRET_KEY, {expiresIn: '1hr'});
+    return jwt.sign(payload, SECRET_KEY, { expiresIn: '7d' });
 }
 
 function verifyToken(token) {
@@ -15,32 +16,90 @@ const login = async (req, res) => {
 
     // Input validation
     if (!email || !password) {
-        return res.status(400).json({message: 'Email and password are required.'});
+        return errorHandler('01',req);
     }
-
-    try {
-        const userDetails = await Admin.findOne({email});
+        const userDetails = await db.login(req,{
+            email: email,
+        })
         if (!userDetails) {
-            return res.status(404).json({message: 'Admin not found'});
+            return errorHandler('02',req);
         }
 
-        if (password !== userDetails.password) {
-            return res.status(401).json({message: 'Invalid password'});
+        const hashedPassword = hashPassword(password);
+        if (hashedPassword !== userDetails.password) {
+            return errorHandler('03',req);
         }
-
-        const token = generateToken({id: userDetails._id, email: userDetails.email});
-
+        const token = generateToken({
+            id: userDetails.id, email: userDetails.email,
+            name: userDetails.name,
+        });
         res.cookie('token', token, {
             httpOnly: true,
             secure: false, // use true in production with HTTPS
             maxAge: 60 * 60 * 1000,
         });
 
-        res.status(200).json({message: 'Login successful'});
-    } catch (err) {
-        res.status(500).json({message: 'Server error', error: err.message});
-    }
+        return {
+            statusCode: 200,
+            message: 'Login successfully',
+        }
 
 }
+async function register(req){
+    const {email, password,name} = req.body;
+    if (!email || !password) {
+        return errorHandler('01',req);
+    }
+    const hashedPassword = hashPassword(password);
+    const existingUser = await db.findAdmin(req,{
+        email: email,
+    })
+    if (!existingUser) {
+        const userDetails = await db.register(req,{
+            email: email,
+            password: hashedPassword,
+            name: name,
+        });
+        console.log("userDetails registered", userDetails);
+        if (!userDetails) {
+            return errorHandler('02',req);
+        }
+        if(userDetails.code)return userDetails
+        return {
+            statusCode: 200,
+            message: 'Register successfully.',
+        }
+    }else {
+        if(existingUser.code) {return existingUser}
+        return errorHandler('06',req);
+    }
+}
+async function forgotPassword(req){
+    const {email, password} = req.body;
+    return {
+        statusCode: 400,
+        message: 'Implementation is pending',
+    }
+}
+async function isAuthenticated(req){
+    const token = req.cookies['token'];
+    if (!token) {
+        return errorHandler('04',req);
+    }
+    try {
+        const user = jwt.verify(token, process.env.SECRET_KEY);
+        return {
+            statusCode: 200,
+            message: 'Authentication successfully',
+            user :  user
+        }
+    }catch(err){
+        console.log(err);
+        return errorHandler('05',req);
+    }
+}
 
-module.exports = {verifyToken, login};
+
+module.exports = {
+    verifyToken, login,register, forgotPassword,isAuthenticated
+};

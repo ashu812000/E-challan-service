@@ -41,9 +41,32 @@ async function getAllOrders(req,where,include,ctx = defaultCtx){
         return errorHandler('500',req)
     }
 }
+async function updateOrder(req,data,where,ctx = defaultCtx){
+    try {
+        const orders = await db.update(ctx,'Order',where,data);
+        console.log("order updated",orders);
+        return orders;
+    }catch (err) {
+        console.log(err)
+        return errorHandler('500',req)
+    }
+}
+async function fetchOrderCounts(req,where,ctx = defaultCtx){
+    try {
+        const count = await db.count(ctx,'Order',where);
+        console.log(`count for ${where} :::::",count`);
+        return count;
+    }catch (err) {
+        console.log(err)
+        return errorHandler('500',req)
+    }
+}
+
 module.exports = {
     fetchOrder,
     doOrder,
     getAllOrders,
-    createOrder
+    createOrder,
+    updateOrder,
+    fetchOrderCounts
 }

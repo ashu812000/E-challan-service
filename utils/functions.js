@@ -8,8 +8,12 @@ function generateOTP() {
 function isValidPhoneNumber(phone) {
     return /^\+91[6-9]\d{9}$/.test(phone);
 }
+function hashPassword(password) {
+    return crypto.createHash('sha256').update(password).digest('hex');
+}
 module.exports ={
     hashOtp,
     generateOTP,
-    isValidPhoneNumber
+    isValidPhoneNumber,
+    hashPassword
 }
