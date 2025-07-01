@@ -12,11 +12,16 @@ const orderRoutes = require('./routes/order');
 require('dotenv').config();
 
 
-
 let app = express();
 require('./database/database');  // connect to DB
 app.use(logger('dev'));
-app.use(cors());
+const allowedOrigin = 'http://localhost:8080';
+
+app.use(cors({
+    origin: allowedOrigin,
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
@@ -27,6 +32,6 @@ app.use('/auth', auth);
 app.use('/shops', shops);
 app.use('/products', products);
 app.use('/otp', otpRoutes);
-app.use('/order',orderRoutes);
+app.use('/order', orderRoutes);
 
 module.exports = app;
