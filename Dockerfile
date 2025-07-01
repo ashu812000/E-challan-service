@@ -2,10 +2,11 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install && npx prisma generate
-
+# Copy everything first (so schema.prisma is available)
 COPY . .
+
+# Install dependencies and generate Prisma client
+RUN npm install && npx prisma generate
 
 EXPOSE 3000
 
