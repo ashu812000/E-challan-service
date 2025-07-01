@@ -24,7 +24,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const allowedOrigins = [
     'http://localhost:8080',
-    'http://13.200.121.204'
+    'http://13.200.121.204',
+    'https://rasan-seva-portal.vercel.app',
+    'https://rasan-seva-portal.vercel.app/'
 ];
 
 app.use(cors({
