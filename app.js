@@ -15,17 +15,32 @@ require('dotenv').config();
 let app = express();
 require('./database/database');  // connect to DB
 app.use(logger('dev'));
-const allowedOrigin = 'http://localhost:8080';
 
-app.use(cors({
-    origin: allowedOrigin,
-    credentials: true
-}));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+const allowedOrigins = [
+    'http://localhost:8080',
+    'http://13.200.121.204'
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        } else {
+            return callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
+
 
 app.use('/', eChalan);
 app.use('/auth', auth);
