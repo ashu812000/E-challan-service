@@ -26,8 +26,12 @@ const allowedOrigins = [
     'http://localhost:8080',
     'http://13.200.121.204',
     'https://rasan-seva-portal.vercel.app',
-    'https://rasan-seva-portal.vercel.app/'
+    'https://rasan-seva-portal.vercel.app/',
+    'https://www.upfpcl.com',
+    'https://www.upfpcl.com/',
+    'http://www.upfpcl.com'
 ];
+
 
 app.use(cors({
     origin: function (origin, callback) {
