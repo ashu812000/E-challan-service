@@ -3,6 +3,7 @@ const productsDb = require("../database/products");
 const db = require('../database/orders');
 const orderProductDb = require('../database/orderProducts');
 const paymentDB = require('../database/payment');
+const s3 = require('../s3/s3')
 async function doOrder(req) {
     const {shopId, phoneNumber, month, year, yojna, products} = req.body;
     /**
@@ -139,8 +140,6 @@ async function calculatePrice(req) {
 async function paymentProof(req) {
     const {orderId} = req.params;
     const imageFile = req.file;
-    console.log("orderId", orderId);
-    console.log("imageFile", imageFile);
     if (!orderId || !imageFile) {
         return errorHandler("06", req);
     }
@@ -162,17 +161,22 @@ async function paymentProof(req) {
     if (existing) {
         return  errorHandler('07',req);
     }
-
-    // Store the payment slip
-    const payment = await paymentDB.createPayment(req,{
-        order: {connect: {id: orderId}},
-        paymentImage: imageFile.buffer
-    })
-
-    return{
-        success: true,
-        message: 'Payment proof uploaded successfully.',
-        paymentSlipId: payment.id
+    try {
+        const key = `${orderId}.${imageFile.originalname.split(".").pop()}`;
+        const s3Response = await s3.uploadBufferToS3(imageFile.buffer, key, imageFile.mimetype);
+        // Store the payment slip
+        const payment = await paymentDB.createPayment(req,{
+            order: {connect: {id: orderId}},
+            paymentProof: s3Response.Location
+        })
+        return{
+            success: true,
+            message: 'Payment proof uploaded successfully.',
+            paymentSlipId: payment.id
+        }
+    }catch(err) {
+        console.log(err);
+        return errorHandler('11',req);
     }
 }
 async function getPaymentProof(req) {
@@ -185,11 +189,10 @@ async function getPaymentProof(req) {
 async function updateOrder(req) {
     const {orderId,status} = req.body;
     if(!orderId || !status) return errorHandler("03", req);
-    const dbStatus = ['pending','accept','reject'];
+    const dbStatus = ['pending','accept','reject','completed'];
     if(!dbStatus.includes(status)){
         return errorHandler("10", req);
     }
-
 
     const whereCondition = {
         id:orderId

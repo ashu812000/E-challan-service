@@ -47,7 +47,6 @@ app.use(cors({
     credentials: true
 }));
 
-
 app.use('/', eChalan);
 app.use('/auth', auth);
 app.use('/shops', shops);

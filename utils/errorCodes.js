@@ -68,9 +68,9 @@ const handleAuth = (errCode, response) => {
         case '05':
             response.reason = "Error Occurred in Token";
             break;
-            case '06':
-                response.reason = "Admin already exist";
-                break;
+        case '06':
+            response.reason = "Admin already exist";
+            break;
     }
 }
 
@@ -146,9 +146,12 @@ const handleOrder = (errCode, response) => {
         case '09':
             response.reason = "Failed to update this order.";
             break;
-            case '10':
-                response.reason = "Wrong status value provided.";
-                break;
+        case '10':
+            response.reason = "Wrong status value provided.";
+            break;
+        case '11':
+            response.reason = "Error from s3 bucket";
+            break;
 
 
     }

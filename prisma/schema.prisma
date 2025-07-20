@@ -78,6 +78,7 @@ enum Status {
   pending
   accept
   reject
+  completed
 }
 
 /**
@@ -99,7 +100,7 @@ model OrderProduct {
  */
 model PaymentSlip {
   id           String @id @default(auto()) @map("_id") @db.ObjectId
-  paymentImage Bytes? // store binary screenshot
+  paymentProof String
   order        Order  @relation("OrderToPayment", fields: [orderId], references: [id])
   orderId      String @unique @db.ObjectId // guarantees exactly one slip per order
 }
