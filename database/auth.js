@@ -4,6 +4,7 @@ const {errorHandler} = require("../utils/errorCodes");
 
 async function login(req,where,ctx = defaultCtx){
     try {
+        console.log("comes for login admin")
         const user = await db.findUnique(ctx,'Admin',where);
         console.log("login by admin",user);
         return user;

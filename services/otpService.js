@@ -33,7 +33,7 @@ exports.sendOTP = async (req) => {
 
   // Send OTP via SMS
   const  twillioRes =  await client.messages.create({
-    body: `Your OTP is: ${otp}`,
+    body: `Your OTP for ACABC vendor login is: ${otp}`,
     from: config.phoneNumber,
     to: phoneNumber
   });

@@ -18,13 +18,14 @@ const login = async (req, res) => {
     if (!email || !password) {
         return errorHandler('01',req);
     }
+    console.log("comes 01")
         const userDetails = await db.login(req,{
             email: email,
         })
         if (!userDetails) {
             return errorHandler('02',req);
         }
-
+        console.log("comes for hashed password", password, "user details password are :: ",userDetails);
         const hashedPassword = hashPassword(password);
         if (hashedPassword !== userDetails.password) {
             return errorHandler('03',req);
